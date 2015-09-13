@@ -28,4 +28,8 @@ public abstract class AbstractDomain {
 	public void setQualifier(ColumnQualifier qualifier) {
 		this.qualifier = qualifier;
 	}
+
+	public abstract Rowkey composeRowkey();
+
+	public abstract ColumnFamily composeFamily();
 }
