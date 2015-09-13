@@ -1,5 +1,7 @@
 package tw.kewang.hbase.schema;
 
-public class AbstractSchema {
+import tw.kewang.hbase.domain.AbstractDomain;
 
+public abstract class AbstractSchema {
+	public abstract AbstractDomain separate();
 }
