@@ -6,4 +6,6 @@ public @interface DataType {
 	};
 
 	Type dataType() default Type.STRING;
+
+	String rowkey() default "";
 }
