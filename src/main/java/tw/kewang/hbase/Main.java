@@ -1,6 +1,9 @@
 package tw.kewang.hbase;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
+import tw.kewang.hbase.annotations.Component;
+import tw.kewang.hbase.annotations.Rowkey;
 
 public class Main {
 	public static void main(String[] args) {
@@ -8,10 +11,23 @@ public class Main {
 
 		Class<User1> clazz = User1.class;
 
-		for (Annotation ann : clazz.getAnnotations()) {
-			System.out.println("1");
-			System.out.println(ann.toString());
-			System.out.println("2");
+		try {
+			Field field = clazz.getDeclaredField("userId");
+
+			Component component = field.getAnnotation(Component.class);
+
+			if (component != null) {
+				System.out.println(component.type());
+				System.out.println(component.name());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Rowkey rowkey = clazz.getAnnotation(Rowkey.class);
+
+		if (rowkey != null) {
+			System.out.println(rowkey.value());
 		}
 	}
 }

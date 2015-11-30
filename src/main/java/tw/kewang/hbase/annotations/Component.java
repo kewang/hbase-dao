@@ -4,16 +4,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Field {
-	public enum ComponentType {
-		UNDEFINED, ROWKEY, FAMILY, COLUMN
-	};
-
-	public enum DataType {
+public @interface Component {
+	public enum Type {
 		UNDEFINED, STRING, INTEGER, LONG
 	};
 
-	String component() default "";
+	String name() default "";
 
-	DataType dataType() default DataType.UNDEFINED;
+	Type type() default Type.UNDEFINED;
 }

@@ -1,16 +1,16 @@
 package tw.kewang.hbase;
 
-import tw.kewang.hbase.annotations.Field;
-import tw.kewang.hbase.annotations.Field.DataType;
+import tw.kewang.hbase.annotations.Component;
+import tw.kewang.hbase.annotations.Component.Type;
 import tw.kewang.hbase.annotations.Rowkey;
 import tw.kewang.hbase.domain.AbstractDomain;
 
 @Rowkey("{ui}_{at}")
 public class User1 extends AbstractDomain {
-	@Field(dataType = DataType.STRING, component = "ui")
+	@Component(type = Type.STRING, name = "ui")
 	private String userId;
 
-	@Field(dataType = DataType.STRING, component = "at")
+	@Component(type = Type.STRING, name = "at")
 	private String accessToken;
 
 	public String getUserId() {
