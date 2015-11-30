@@ -1,31 +1,35 @@
 package tw.kewang.hbase;
 
-import tw.kewang.hbase.annotations.Compose;
-import tw.kewang.hbase.annotations.DataType;
-import tw.kewang.hbase.annotations.DataType.Type;
+import tw.kewang.hbase.annotations.Field;
+import tw.kewang.hbase.annotations.Field.DataType;
+import tw.kewang.hbase.annotations.Rowkey;
 import tw.kewang.hbase.domain.AbstractDomain;
-import tw.kewang.hbase.domain.ColumnFamily;
-import tw.kewang.hbase.domain.ColumnQualifier;
-import tw.kewang.hbase.domain.Rowkey;
 
-@Compose(rowkey = "{ui}_{at}")
+@Rowkey("{ui}_{at}")
 public class User1 extends AbstractDomain {
-	@DataType(dataType = Type.STRING, rowkey = "{ui}")
-	private ColumnQualifier userId;
+	@Field(dataType = DataType.STRING, component = "ui")
+	private String userId;
 
-	@DataType(dataType = Type.STRING, rowkey = "{at}")
-	private ColumnQualifier accessToken;
+	@Field(dataType = DataType.STRING, component = "at")
+	private String accessToken;
 
-	@DataType(dataType = Type.LONG)
-	private ColumnQualifier createdTime;
-
-	@Override
-	public Rowkey composeRowkey() {
-		return null;
+	public String getUserId() {
+		return userId;
 	}
 
-	@Override
-	public ColumnFamily composeFamily() {
-		return null;
+	public User1 setUserId(String userId) {
+		this.userId = userId;
+
+		return this;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public User1 setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+
+		return this;
 	}
 }
