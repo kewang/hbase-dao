@@ -1,16 +1,29 @@
 package tw.kewang.hbase.domain;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
+import tw.kewang.hbase.annotations.Component;
+import tw.kewang.hbase.annotations.Rowkey;
+
 public abstract class AbstractDomain {
-	private Rowkey rowkey;
 	private ColumnFamily family;
 	private ColumnQualifier qualifier;
 
-	public Rowkey getRowkey() {
-		return rowkey;
-	}
+	public String getRowkey() {
+		Class<?> clazz = getClass();
 
-	public void setRowkey(Rowkey rowkey) {
-		this.rowkey = rowkey;
+		Rowkey rowkey = clazz.getAnnotation(Rowkey.class);
+
+		if (rowkey != null) {
+			String rowkeyPattern = rowkey.value();
+		}
+
+		for (Field field : clazz.getDeclaredFields()) {
+			Annotation ann = field.getAnnotation(Component.class);
+		}
+
+		return null;
 	}
 
 	public ColumnFamily getFamily() {

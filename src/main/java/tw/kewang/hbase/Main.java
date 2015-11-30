@@ -9,9 +9,17 @@ public class Main {
 	public static void main(String[] args) {
 		User1 u1 = new User1();
 
+		u1.getRowkey();
+
 		Class<User1> clazz = User1.class;
 
 		try {
+			Rowkey rowkey = clazz.getAnnotation(Rowkey.class);
+
+			if (rowkey != null) {
+				System.out.println(rowkey.value());
+			}
+
 			Field field = clazz.getDeclaredField("userId");
 
 			Component component = field.getAnnotation(Component.class);
@@ -24,10 +32,5 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		Rowkey rowkey = clazz.getAnnotation(Rowkey.class);
-
-		if (rowkey != null) {
-			System.out.println(rowkey.value());
-		}
 	}
 }
