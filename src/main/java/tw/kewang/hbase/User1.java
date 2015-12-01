@@ -5,7 +5,7 @@ import tw.kewang.hbase.annotations.Component.Type;
 import tw.kewang.hbase.annotations.Rowkey;
 import tw.kewang.hbase.domain.AbstractDomain;
 
-@Rowkey("{ui}_{at}")
+@Rowkey("aabb_ui__{ui}ddd_{at}__")
 public class User1 extends AbstractDomain {
 	@Component(type = Type.STRING, name = "ui")
 	private String userId;
