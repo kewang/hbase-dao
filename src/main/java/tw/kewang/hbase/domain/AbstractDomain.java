@@ -56,13 +56,13 @@ public abstract class AbstractDomain {
 		return sb.toString();
 	}
 
-	private String castValue(Field field, Class<?> ab) {
+	private String castValue(Field field, Class<?> clazz) {
 		try {
-			if (ab.isAssignableFrom(String.class)) {
+			if (clazz.isAssignableFrom(String.class)) {
 				return (String) field.get(this);
-			} else if (ab.isAssignableFrom(Long.class)) {
+			} else if (clazz.isAssignableFrom(Long.class)) {
 				return String.valueOf(field.get(this));
-			} else if (ab.isAssignableFrom(Integer.class)) {
+			} else if (clazz.isAssignableFrom(Integer.class)) {
 				return String.valueOf(field.get(this));
 			} else {
 				return null;
