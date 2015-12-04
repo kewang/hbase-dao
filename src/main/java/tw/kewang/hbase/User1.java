@@ -12,7 +12,7 @@ public class User1 extends AbstractDomain {
 	@Component(name = "at")
 	private String accessToken;
 
-	@Component(classType = Long.class, name = "ct")
+	@Component(name = "ct")
 	private long createdTime;
 
 	public String getUserId() {

@@ -39,7 +39,7 @@ public abstract class AbstractDomain {
 
 				if (component.name().equals(matcher.group(1))) {
 					try {
-						String value = castValue(field, component.classType());
+						String value = castValue(field);
 
 						if (value != null) {
 							matcher.appendReplacement(sb, value);
@@ -56,13 +56,15 @@ public abstract class AbstractDomain {
 		return sb.toString();
 	}
 
-	private String castValue(Field field, Class<?> clazz) {
+	private String castValue(Field field) {
+		Class<?> fieldClass = field.getType();
+
 		try {
-			if (clazz.isAssignableFrom(String.class)) {
+			if (fieldClass.isAssignableFrom(String.class)) {
 				return (String) field.get(this);
-			} else if (clazz.isAssignableFrom(Long.class)) {
+			} else if (fieldClass.isAssignableFrom(Long.class)) {
 				return String.valueOf(field.get(this));
-			} else if (clazz.isAssignableFrom(Integer.class)) {
+			} else if (fieldClass.isAssignableFrom(Integer.class)) {
 				return String.valueOf(field.get(this));
 			} else {
 				return null;
