@@ -8,7 +8,7 @@ import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Rowkey;
 
 public abstract class AbstractDomain {
-	private static final String REGEX = "\\{([\\d\\w]+)\\}";
+	private static final Pattern PATTERN = Pattern.compile("\\{([\\d\\w]+)\\}");
 
 	private ColumnFamily family;
 	private ColumnQualifier qualifier;
@@ -26,9 +26,8 @@ public abstract class AbstractDomain {
 	}
 
 	private String buildRowkey(Class<?> clazz, Rowkey rowkey) {
-		Pattern pattern = Pattern.compile(REGEX);
 		String rowkeyPattern = rowkey.value();
-		Matcher matcher = pattern.matcher(rowkeyPattern);
+		Matcher matcher = PATTERN.matcher(rowkeyPattern);
 		StringBuffer sb = new StringBuffer();
 
 		while (matcher.find()) {
