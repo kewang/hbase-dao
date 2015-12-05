@@ -5,7 +5,7 @@ import tw.kewang.hbase.annotations.Rowkey;
 import tw.kewang.hbase.domain.AbstractDomain;
 
 @Rowkey("{ui}_{at}")
-public class User1 extends AbstractDomain {
+public class User2 extends AbstractDomain {
 	@Component(name = "ui")
 	private String userId;
 
@@ -19,7 +19,7 @@ public class User1 extends AbstractDomain {
 		return userId;
 	}
 
-	public User1 setUserId(String userId) {
+	public User2 setUserId(String userId) {
 		this.userId = userId;
 
 		return this;
@@ -29,7 +29,7 @@ public class User1 extends AbstractDomain {
 		return accessToken;
 	}
 
-	public User1 setAccessToken(String accessToken) {
+	public User2 setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 
 		return this;
@@ -39,7 +39,7 @@ public class User1 extends AbstractDomain {
 		return createdTime;
 	}
 
-	public User1 setCreatedTime(long createdTime) {
+	public User2 setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 
 		return this;
