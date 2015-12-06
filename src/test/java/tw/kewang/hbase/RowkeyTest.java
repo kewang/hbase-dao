@@ -26,4 +26,11 @@ public class RowkeyTest extends TestCase {
 
 		assertEquals("u001_a001", u1.getRowkey());
 	}
+
+	public void testUser2() {
+		User2 u2 = new User2().setUserId("u002").setAccessToken("a002")
+				.setId("kewang");
+
+		assertEquals("u002_a002_kewang", u2.getRowkey());
+	}
 }

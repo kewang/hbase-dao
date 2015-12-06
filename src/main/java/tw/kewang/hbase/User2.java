@@ -4,13 +4,16 @@ import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Rowkey;
 import tw.kewang.hbase.domain.AbstractDomain;
 
-@Rowkey("{ui}_{at}")
+@Rowkey("{ui}_{at}_{id}")
 public class User2 extends AbstractDomain {
 	@Component(name = "ui")
 	private String userId;
 
 	@Component(name = "at")
 	private String accessToken;
+
+	@Component(name = "id")
+	private String id;
 
 	@Component(name = "ct")
 	private long createdTime;
@@ -31,6 +34,16 @@ public class User2 extends AbstractDomain {
 
 	public User2 setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
+
+		return this;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public User2 setId(String id) {
+		this.id = id;
 
 		return this;
 	}
