@@ -4,10 +4,16 @@ import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tw.kewang.hbase.annotations.Component;
-import tw.kewang.hbase.annotations.Rowkey;
+import tw.kewang.hbase.annotations.Domain;
+import tw.kewang.hbase.dao.Constants;
 
 public abstract class AbstractDomain {
+	private static final Logger LOG = LoggerFactory
+			.getLogger(AbstractDomain.class);
 	private static final Pattern PATTERN = Pattern.compile("\\{([\\d\\w]+)\\}");
 
 	private ColumnFamily family;
@@ -16,17 +22,16 @@ public abstract class AbstractDomain {
 	public String getRowkey() {
 		Class<?> clazz = getClass();
 
-		Rowkey rowkey = clazz.getAnnotation(Rowkey.class);
+		Domain domain = clazz.getAnnotation(Domain.class);
 
-		if (rowkey != null) {
-			return buildRowkey(clazz, rowkey);
+		if (domain != null) {
+			return buildRowkey(clazz, domain.rowkey());
 		}
 
 		return null;
 	}
 
-	private String buildRowkey(Class<?> clazz, Rowkey rowkey) {
-		String rowkeyPattern = rowkey.value();
+	private String buildRowkey(Class<?> clazz, String rowkeyPattern) {
 		Matcher matcher = PATTERN.matcher(rowkeyPattern);
 		StringBuffer sb = new StringBuffer();
 
@@ -44,7 +49,7 @@ public abstract class AbstractDomain {
 							matcher.appendReplacement(sb, value);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOG.error(Constants.EXCEPTION_PREFIX, e);
 					}
 				}
 			}
@@ -69,7 +74,7 @@ public abstract class AbstractDomain {
 				return null;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error(Constants.EXCEPTION_PREFIX, e);
 		}
 
 		return null;

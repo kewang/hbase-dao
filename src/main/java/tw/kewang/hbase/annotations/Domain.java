@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Rowkey {
-	String value();
+public @interface Domain {
+	String rowkey();
+
+	int maxVersions() default 1;
 }
