@@ -34,15 +34,13 @@ public abstract class AbstractDao {
 			Result result = hTableInterface.get(buildGet(rowkey));
 
 			if (!result.isEmpty()) {
-				String resultRowkey = Bytes.toString(result.getRow());
-
 				for (Class<? extends AbstractDomain> domain : table.domains()) {
 					Domain domainAnnotation = domain
 							.getAnnotation(Domain.class);
 
 					String rowkeyPattern = domainAnnotation.rowkey();
 
-					buildDomain(domain, rowkeyPattern, resultRowkey);
+					buildDomain(domain, rowkeyPattern, rowkey);
 				}
 			}
 		} catch (Exception e) {
