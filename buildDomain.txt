@@ -1,0 +1,58 @@
+rowkeyChars=x123_y678=>9
+patternChars={ui}_{at}
+foundField=false
+patternIndex=0
+rowkeyIndex=0
+==========================
+patternChar={
+foundField=true
+patternIndex=1
+==========================
+patternChar=u
+fieldName=u
+patternIndex=2
+==========================
+patternChar=i
+fieldName=ui
+patternIndex=3
+==========================
+patternChar=}
+separator=_
+	rowkeyIndex=1
+	rowkeyChar=x
+	fieldValue=x
+	==================
+	rowkeyIndex=2
+	rowkeyChar=1
+	fieldValue=x1
+	==================
+	rowkeyIndex=3
+	rowkeyChar=2
+	fieldValue=x12
+	==================
+	rowkeyIndex=4
+	rowkeyChar=3
+	fieldValue=x123
+	==================
+	rowkeyChar=_
+domainFields=[{ui,x123}]
+fieldName=""
+fieldValue=""
+foundField=false
+patternIndex=4
+patternIndex=5
+==========================
+patternChar={
+foundField=true
+patternIndex=6
+==========================
+patternChar=a
+fieldName=a
+patternIndex=7
+==========================
+patternChar=t
+fieldName=at
+patternIndex=8
+==========================
+patternChar=}
+

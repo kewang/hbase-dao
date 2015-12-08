@@ -1,8 +1,7 @@
 package tw.kewang.hbase.dao;
 
 import java.lang.reflect.Field;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnection;
@@ -12,7 +11,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Domain;
 import tw.kewang.hbase.annotations.Table;
 import tw.kewang.hbase.domain.AbstractDomain;
@@ -73,38 +71,60 @@ public abstract class AbstractDao {
 	}
 
 	private String buildDomain(Class<?> clazz, String rowkeyPattern,
-			String rowkeyRowkey) {
-		Pattern pattern = Pattern.compile(rowkeyPattern);
-		Matcher matcher = pattern.matcher(rowkeyRowkey);
-		StringBuffer sb = new StringBuffer();
+			String rowkey) {
+		char[] patternChars = rowkeyPattern.toCharArray();
+		char[] rowkeyChars = rowkey.toCharArray();
+		boolean foundField = false;
+		StringBuffer fieldName = new StringBuffer();
+		StringBuffer fieldValue = new StringBuffer();
+		int patternIndex = 0;
+		int rowkeyIndex = 0;
+		ArrayList<DomainField> domainFields = new ArrayList<DomainField>();
 
-		while (matcher.find()) {
-			for (Field field : clazz.getDeclaredFields()) {
-				field.setAccessible(true);
+		while (true) {
+			char patternChar = patternChars[patternIndex];
 
-				Component component = field.getAnnotation(Component.class);
+			switch (patternChar) {
+			case '{':
+				foundField = true;
 
-				if (component.name().equals(matcher.group(1))) {
-					try {
-						String value = castValue(field);
+				break;
+			case '}':
+				LOG.debug(fieldName.toString());
 
-						if (value != null) {
-							matcher.appendReplacement(sb, value);
-						} else {
-							return null;
-						}
-					} catch (Exception e) {
-						LOG.error(Constants.EXCEPTION_PREFIX, e);
+				char separator = patternChars[patternIndex + 1];
 
-						return null;
+				for (; rowkeyIndex < rowkeyChars.length; rowkeyIndex++) {
+					char rowkeyChar = rowkeyChars[rowkeyIndex];
+
+					if (rowkeyChar == separator) {
+						break;
 					}
+
+					fieldValue.append(rowkeyChar);
 				}
+
+				domainFields.add(new DomainField(fieldName.toString(),
+						fieldValue.toString()));
+
+				fieldName.setLength(0);
+				fieldValue.setLength(0);
+
+				foundField = false;
+
+				patternIndex++;
+
+				break;
+			default:
+				if (foundField) {
+					fieldName.append(patternChar);
+				}
+
+				break;
 			}
+
+			patternIndex++;
 		}
-
-		matcher.appendTail(sb);
-
-		return sb.toString();
 	}
 
 	private String castValue(Field field) {
@@ -136,6 +156,24 @@ public abstract class AbstractDao {
 			} catch (Error e) {
 				LOG.error(Constants.EXCEPTION_PREFIX, e);
 			}
+		}
+	}
+
+	private class DomainField {
+		private String fieldName;
+		private String fieldValue;
+
+		public DomainField(String fieldName, String fieldValue) {
+			this.fieldName = fieldName;
+			this.fieldValue = fieldValue;
+		}
+
+		public String getFieldName() {
+			return fieldName;
+		}
+
+		public String getFieldValue() {
+			return fieldValue;
 		}
 	}
 }
