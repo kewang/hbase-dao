@@ -1,5 +1,5 @@
 rowkeyChars=x123_y678=>9
-patternChars={ui}_{at}
+patternChars={ui}_{at}=>9
 foundField=false
 patternIndex=0
 rowkeyIndex=0
@@ -18,23 +18,24 @@ patternIndex=3
 ==========================
 patternChar=}
 separator=_
-	rowkeyIndex=1
+	rowkeyIndex=0
 	rowkeyChar=x
 	fieldValue=x
 	==================
-	rowkeyIndex=2
+	rowkeyIndex=1
 	rowkeyChar=1
 	fieldValue=x1
 	==================
-	rowkeyIndex=3
+	rowkeyIndex=2
 	rowkeyChar=2
 	fieldValue=x12
 	==================
-	rowkeyIndex=4
+	rowkeyIndex=3
 	rowkeyChar=3
 	fieldValue=x123
 	==================
 	rowkeyChar=_
+  rowkeyIndex=4
 domainFields=[{ui,x123}]
 fieldName=""
 fieldValue=""
@@ -55,4 +56,3 @@ fieldName=at
 patternIndex=8
 ==========================
 patternChar=}
-

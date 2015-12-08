@@ -92,12 +92,20 @@ public abstract class AbstractDao {
 			case '}':
 				LOG.debug(fieldName.toString());
 
-				char separator = patternChars[patternIndex + 1];
+				char separator;
+
+				if (patternIndex == patternChars.length - 1) {
+					separator = '\n';
+				} else {
+					separator = patternChars[patternIndex + 1];
+				}
 
 				for (; rowkeyIndex < rowkeyChars.length; rowkeyIndex++) {
 					char rowkeyChar = rowkeyChars[rowkeyIndex];
 
 					if (rowkeyChar == separator) {
+						rowkeyIndex++;
+
 						break;
 					}
 
