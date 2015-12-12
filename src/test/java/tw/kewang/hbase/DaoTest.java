@@ -9,6 +9,6 @@ public class DaoTest extends TestCase {
 
 		UserDao uDao = new UserDao();
 
-		uDao.getByRowkey("u001_a001");
+		uDao.getByRowkey("xyz_abc");
 	}
 }

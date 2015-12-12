@@ -1,0 +1,88 @@
+rowkeyChars=xyz_abc=>7
+patternChars={ui}_{at}_{id}=>14
+foundField=false
+patternIndex=0
+rowkeyIndex=0
+==========================
+patternChar={
+foundField=true
+rowkeyIndex=0
+mid=""
+patternIndex=1
+==========================
+patternChar=u
+fieldName=u
+patternIndex=2
+==========================
+patternChar=i
+fieldName=ui
+patternIndex=3
+==========================
+patternChar=}
+separator=_
+  ========================
+  rowkeyChar=x
+  fieldValue=x
+  rowkeyIndex=1
+  ========================
+  rowkeyChar=y
+  fieldValue=xy
+  rowkeyIndex=2
+  ========================
+  rowkeyChar=z
+  fieldValue=xyz
+  rowkeyIndex=3
+  ========================
+  rowkeyChar=_
+  ========================
+domainFields=[{ui,xyz}]
+fieldName=""
+fieldValue=""
+foundField=false
+patternIndex=4
+==========================
+patternChar=_
+mid=_
+patternIndex=5
+==========================
+patternChar={
+foundField=true
+rowkeyIndex=4
+mid=""
+patternIndex=6
+==========================
+patternChar=a
+fieldName=a
+patternIndex=7
+==========================
+patternChar=t
+fieldName=at
+patternIndex=8
+==========================
+patternChar=}
+separator=_
+  ========================
+  rowkeyChar=a
+  fieldValue=a
+  rowkeyIndex=5
+  ========================
+  rowkeyChar=b
+  fieldValue=ab
+  rowkeyIndex=6
+  ========================
+  rowkeyChar=c
+  fieldValue=abc
+  rowkeyIndex=7
+  ========================
+domainFields=[{ui,xyz},{at,abc}]
+fieldName=""
+fieldValue=""
+foundField=false
+patternIndex=9
+==========================
+patternChar=_
+mid=_
+patternIndex=10
+==========================
+patternChar={
+rowkeyIndex=

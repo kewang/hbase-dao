@@ -11,6 +11,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Domain;
 import tw.kewang.hbase.annotations.Table;
 import tw.kewang.hbase.domain.AbstractDomain;
@@ -35,10 +36,20 @@ public abstract class AbstractDao {
 				for (Class<? extends AbstractDomain> domain : table.domains()) {
 					Domain domainAnnotation = domain
 							.getAnnotation(Domain.class);
+					ArrayList<DomainField> domainFields = buildDomain(domain,
+							domainAnnotation.rowkey(), rowkey);
 
-					String rowkeyPattern = domainAnnotation.rowkey();
+					if (domainFields == null) {
+						continue;
+					}
 
-					buildDomain(domain, rowkeyPattern, rowkey);
+					for (DomainField domainField : domainFields) {
+						boolean foundField = findField(domain, domainField);
+
+						if (!foundField) {
+							continue;
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -50,6 +61,22 @@ public abstract class AbstractDao {
 		}
 
 		return null;
+	}
+
+	private boolean findField(Class<? extends AbstractDomain> domain,
+			DomainField domainField) {
+		for (Field field : domain.getDeclaredFields()) {
+			field.setAccessible(true);
+
+			Component component = field.getAnnotation(Component.class);
+
+			if (component != null
+					&& component.name().equals(domainField.fieldName)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private Table getTableAnnotation() {
@@ -70,9 +97,9 @@ public abstract class AbstractDao {
 		return get;
 	}
 
-	private String buildDomain(Class<?> clazz, String rowkeyPattern,
+	private ArrayList<DomainField> buildDomain(Class<?> clazz, String pattern,
 			String rowkey) {
-		char[] patternChars = rowkeyPattern.toCharArray();
+		char[] patternChars = pattern.toCharArray();
 		char[] rowkeyChars = rowkey.toCharArray();
 		boolean foundField = false;
 		StringBuffer fieldName = new StringBuffer();
@@ -91,8 +118,13 @@ public abstract class AbstractDao {
 
 				String midString = mid.toString();
 
-				rowkeyIndex = rowkey.indexOf(midString, rowkeyIndex)
-						+ midString.length();
+				int searchIndex = rowkey.indexOf(midString, rowkeyIndex);
+
+				if (searchIndex == -1) {
+					return null;
+				}
+
+				rowkeyIndex = searchIndex + midString.length();
 
 				mid.setLength(0);
 
@@ -149,6 +181,8 @@ public abstract class AbstractDao {
 
 			patternIndex++;
 		}
+
+		return domainFields;
 	}
 
 	private String castValue(Field field) {
