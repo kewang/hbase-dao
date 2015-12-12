@@ -77,6 +77,7 @@ public abstract class AbstractDao {
 		boolean foundField = false;
 		StringBuffer fieldName = new StringBuffer();
 		StringBuffer fieldValue = new StringBuffer();
+		StringBuffer mid = new StringBuffer();
 		int patternIndex = 0;
 		int rowkeyIndex = 0;
 		ArrayList<DomainField> domainFields = new ArrayList<DomainField>();
@@ -87,6 +88,13 @@ public abstract class AbstractDao {
 			switch (patternChar) {
 			case '{':
 				foundField = true;
+
+				String midString = mid.toString();
+
+				rowkeyIndex = rowkey.indexOf(midString, rowkeyIndex)
+						+ midString.length();
+
+				mid.setLength(0);
 
 				break;
 			case '}':
@@ -101,11 +109,15 @@ public abstract class AbstractDao {
 				}
 
 				for (; rowkeyIndex < rowkeyChars.length; rowkeyIndex++) {
-					char rowkeyChar = rowkeyChars[rowkeyIndex];
+					char rowkeyChar;
+
+					if (rowkeyIndex == rowkeyChars.length) {
+						rowkeyChar = '\n';
+					} else {
+						rowkeyChar = rowkeyChars[rowkeyIndex];
+					}
 
 					if (rowkeyChar == separator) {
-						rowkeyIndex++;
-
 						break;
 					}
 
@@ -120,14 +132,18 @@ public abstract class AbstractDao {
 
 				foundField = false;
 
-				patternIndex++;
-
 				break;
 			default:
 				if (foundField) {
 					fieldName.append(patternChar);
+				} else {
+					mid.append(patternChar);
 				}
 
+				break;
+			}
+
+			if (patternIndex == patternChars.length - 1) {
 				break;
 			}
 
@@ -165,6 +181,17 @@ public abstract class AbstractDao {
 				LOG.error(Constants.EXCEPTION_PREFIX, e);
 			}
 		}
+	}
+
+	public static void main(String[] args) {
+		String rowkey = "xyz_abc";
+		String mid = "_";
+		int rowkeyIndex = 3;
+
+		rowkeyIndex = rowkey.indexOf(mid.toString(), rowkeyIndex)
+				+ mid.toString().length();
+
+		System.out.println(rowkeyIndex);
 	}
 
 	private class DomainField {

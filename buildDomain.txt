@@ -1,4 +1,4 @@
-rowkeyChars=x123_y678=>9
+rowkeyChars=xyz_abc=>9
 patternChars={ui}_{at}=>9
 foundField=false
 patternIndex=0
@@ -6,6 +6,8 @@ rowkeyIndex=0
 ==========================
 patternChar={
 foundField=true
+rowkeyIndex=0
+mid=""
 patternIndex=1
 ==========================
 patternChar=u
@@ -18,33 +20,35 @@ patternIndex=3
 ==========================
 patternChar=}
 separator=_
-	rowkeyIndex=0
-	rowkeyChar=x
-	fieldValue=x
-	==================
-	rowkeyIndex=1
-	rowkeyChar=1
-	fieldValue=x1
-	==================
-	rowkeyIndex=2
-	rowkeyChar=2
-	fieldValue=x12
-	==================
-	rowkeyIndex=3
-	rowkeyChar=3
-	fieldValue=x123
-	==================
-	rowkeyChar=_
-  rowkeyIndex=4
-domainFields=[{ui,x123}]
+  ========================
+  rowkeyChar=x
+  fieldValue=x
+  rowkeyIndex=1
+  ========================
+  rowkeyChar=y
+  fieldValue=xy
+  rowkeyIndex=2
+  ========================
+  rowkeyChar=z
+  fieldValue=xyz
+  rowkeyIndex=3
+  ========================
+  rowkeyChar=_
+  ========================
+domainFields=[{ui,xyz}]
 fieldName=""
 fieldValue=""
 foundField=false
 patternIndex=4
+==========================
+patternChar=_
+mid=_
 patternIndex=5
 ==========================
 patternChar={
 foundField=true
+rowkeyIndex=4
+mid=""
 patternIndex=6
 ==========================
 patternChar=a
@@ -56,3 +60,23 @@ fieldName=at
 patternIndex=8
 ==========================
 patternChar=}
+separator=\n
+  ========================
+  rowkeyChar=a
+  fieldValue=a
+  rowkeyIndex=5
+  ========================
+  rowkeyChar=b
+  fieldValue=ab
+  rowkeyIndex=6
+  ========================
+  rowkeyChar=c
+  fieldValue=abc
+  rowkeyIndex=7
+  ========================
+  rowkeyChar=\n
+  ========================
+domainFields=[{ui,xyz},{at,abc}]
+fieldName=""
+fieldValue=""
+foundField=false
