@@ -11,7 +11,7 @@ public class DaoTest extends TestCase {
 
 		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");
 
-		System.out.println(u1.getUserId());
-		System.out.println(u1.getAccessToken());
+		assertEquals("xyz", u1.getUserId());
+		assertEquals("abc", u1.getAccessToken());
 	}
 }

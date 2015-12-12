@@ -46,7 +46,7 @@ public abstract class AbstractDao {
 		return null;
 	}
 
-	private AbstractDomain findDomain(String rowkey) {
+	private AbstractDomain findDomain(String rowkey) throws Exception {
 		for (Class<? extends AbstractDomain> domainClass : table.domains()) {
 			Domain domainAnnotation = domainClass.getAnnotation(Domain.class);
 			ArrayList<DomainField> domainFields = buildDomain(domainClass,
@@ -64,29 +64,23 @@ public abstract class AbstractDao {
 				}
 			}
 
-			try {
-				AbstractDomain domain = domainClass.newInstance();
+			AbstractDomain domain = domainClass.newInstance();
 
-				for (Field field : domain.getClass().getDeclaredFields()) {
-					field.setAccessible(true);
+			for (Field field : domain.getClass().getDeclaredFields()) {
+				field.setAccessible(true);
 
-					Component component = field.getAnnotation(Component.class);
+				Component component = field.getAnnotation(Component.class);
 
-					for (DomainField domainField : domainFields) {
-						if (component != null
-								&& component.name().equals(
-										domainField.fieldName)) {
-							field.set(domain, domainField.fieldValue);
+				for (DomainField domainField : domainFields) {
+					if (checkName(domainField.fieldName, component)) {
+						field.set(domain, domainField.fieldValue);
 
-							break;
-						}
+						break;
 					}
 				}
-
-				return domain;
-			} catch (Exception e) {
-				LOG.error(Constants.EXCEPTION_PREFIX, e);
 			}
+
+			return domain;
 		}
 
 		return null;
@@ -99,13 +93,16 @@ public abstract class AbstractDao {
 
 			Component component = field.getAnnotation(Component.class);
 
-			if (component != null
-					&& component.name().equals(domainField.fieldName)) {
+			if (checkName(domainField.fieldName, component)) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	private boolean checkName(String fieldName, Component component) {
+		return component != null && component.name().equals(fieldName);
 	}
 
 	private Table getTableAnnotation() {
@@ -244,14 +241,6 @@ public abstract class AbstractDao {
 		public DomainField(String fieldName, String fieldValue) {
 			this.fieldName = fieldName;
 			this.fieldValue = fieldValue;
-		}
-
-		public String getFieldName() {
-			return fieldName;
-		}
-
-		public String getFieldValue() {
-			return fieldValue;
 		}
 	}
 }
