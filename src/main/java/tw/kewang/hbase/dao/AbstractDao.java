@@ -33,24 +33,7 @@ public abstract class AbstractDao {
 			Result result = hTableInterface.get(buildGet(rowkey));
 
 			if (!result.isEmpty()) {
-				for (Class<? extends AbstractDomain> domain : table.domains()) {
-					Domain domainAnnotation = domain
-							.getAnnotation(Domain.class);
-					ArrayList<DomainField> domainFields = buildDomain(domain,
-							domainAnnotation.rowkey(), rowkey);
-
-					if (domainFields == null) {
-						continue;
-					}
-
-					for (DomainField domainField : domainFields) {
-						boolean foundField = findField(domain, domainField);
-
-						if (!foundField) {
-							continue;
-						}
-					}
-				}
+				return findDomain(rowkey);
 			}
 		} catch (Exception e) {
 			LOG.error(Constants.EXCEPTION_PREFIX, e);
@@ -63,9 +46,55 @@ public abstract class AbstractDao {
 		return null;
 	}
 
-	private boolean findField(Class<? extends AbstractDomain> domain,
+	private AbstractDomain findDomain(String rowkey) {
+		for (Class<? extends AbstractDomain> domainClass : table.domains()) {
+			Domain domainAnnotation = domainClass.getAnnotation(Domain.class);
+			ArrayList<DomainField> domainFields = buildDomain(domainClass,
+					domainAnnotation.rowkey(), rowkey);
+
+			if (domainFields == null) {
+				continue;
+			}
+
+			for (DomainField domainField : domainFields) {
+				boolean foundField = findField(domainClass, domainField);
+
+				if (!foundField) {
+					continue;
+				}
+			}
+
+			try {
+				AbstractDomain domain = domainClass.newInstance();
+
+				for (Field field : domain.getClass().getDeclaredFields()) {
+					field.setAccessible(true);
+
+					Component component = field.getAnnotation(Component.class);
+
+					for (DomainField domainField : domainFields) {
+						if (component != null
+								&& component.name().equals(
+										domainField.fieldName)) {
+							field.set(domain, domainField.fieldValue);
+
+							break;
+						}
+					}
+				}
+
+				return domain;
+			} catch (Exception e) {
+				LOG.error(Constants.EXCEPTION_PREFIX, e);
+			}
+		}
+
+		return null;
+	}
+
+	private boolean findField(Class<? extends AbstractDomain> domainClass,
 			DomainField domainField) {
-		for (Field field : domain.getDeclaredFields()) {
+		for (Field field : domainClass.getDeclaredFields()) {
 			field.setAccessible(true);
 
 			Component component = field.getAnnotation(Component.class);
@@ -183,26 +212,6 @@ public abstract class AbstractDao {
 		}
 
 		return domainFields;
-	}
-
-	private String castValue(Field field) {
-		Class<?> fieldClass = field.getType();
-
-		try {
-			if (fieldClass.isAssignableFrom(String.class)) {
-				return (String) field.get(this);
-			} else if (fieldClass.isAssignableFrom(Long.class)) {
-				return String.valueOf(field.get(this));
-			} else if (fieldClass.isAssignableFrom(Integer.class)) {
-				return String.valueOf(field.get(this));
-			} else {
-				return null;
-			}
-		} catch (Exception e) {
-			LOG.error(Constants.EXCEPTION_PREFIX, e);
-		}
-
-		return null;
 	}
 
 	private void closeHTable(HTableInterface hTableInterface) {
