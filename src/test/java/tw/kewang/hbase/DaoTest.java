@@ -35,5 +35,6 @@ public class DaoTest extends TestCase {
 
 		assertNotNull(u1);
 		assertNotNull(u2);
+		assertEquals("kewang", u2.getId());
 	}
 }
