@@ -1,10 +1,13 @@
 package tw.kewang.hbase;
 
 import junit.framework.TestCase;
+import tw.kewang.hbase.dao.DaoManager;
 import tw.kewang.hbase.dao.HBaseSettings;
 
 public class DaoTest extends TestCase {
 	public void testUser1GetByRowkey() {
+		DaoManager.getInstance(UserDao.class).getByRowkey("");
+
 		HBaseSettings.setZooKeeperQuorum("localhost");
 
 		UserDao uDao = new UserDao();
