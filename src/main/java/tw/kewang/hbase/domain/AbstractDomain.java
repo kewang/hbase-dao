@@ -16,9 +16,6 @@ public abstract class AbstractDomain {
 			.getLogger(AbstractDomain.class);
 	private static final Pattern PATTERN = Pattern.compile("\\{([\\d\\w]+)\\}");
 
-	private ColumnFamily family;
-	private ColumnQualifier qualifier;
-
 	public String getRowkey() {
 		Class<?> clazz = getClass();
 
@@ -78,22 +75,6 @@ public abstract class AbstractDomain {
 		}
 
 		return null;
-	}
-
-	public ColumnFamily getFamily() {
-		return family;
-	}
-
-	public void setFamily(ColumnFamily family) {
-		this.family = family;
-	}
-
-	public ColumnQualifier getQualifier() {
-		return qualifier;
-	}
-
-	public void setQualifier(ColumnQualifier qualifier) {
-		this.qualifier = qualifier;
 	}
 
 	public Object getRawValues() {
