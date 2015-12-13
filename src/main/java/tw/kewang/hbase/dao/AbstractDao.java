@@ -2,6 +2,9 @@ package tw.kewang.hbase.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnection;
@@ -23,6 +26,7 @@ public abstract class AbstractDao {
 			.getInstance().getHConnection();
 
 	private final Table table = getTableAnnotation();
+	private final Class<? extends AbstractDomain>[] domains = table.domains();
 
 	public AbstractDomain getByRowkey(String rowkey) {
 		HTableInterface hTableInterface = null;
@@ -46,8 +50,19 @@ public abstract class AbstractDao {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	private Class<? extends AbstractDomain>[] sortDomains(
+			Class<? extends AbstractDomain>[] srcDomains) {
+		ArrayList<Class<? extends AbstractDomain>> destDomains = new ArrayList<Class<? extends AbstractDomain>>(
+				Arrays.asList(srcDomains));
+
+		Collections.sort(destDomains, new DomainComparator());
+
+		return (Class<? extends AbstractDomain>[]) destDomains.toArray();
+	}
+
 	private AbstractDomain findDomain(String rowkey) throws Exception {
-		for (Class<? extends AbstractDomain> domainClass : table.domains()) {
+		for (Class<? extends AbstractDomain> domainClass : domains) {
 			Domain domainAnnotation = domainClass.getAnnotation(Domain.class);
 			ArrayList<DomainField> domainFields = buildDomain(domainClass,
 					domainAnnotation.rowkey(), rowkey);
@@ -224,7 +239,7 @@ public abstract class AbstractDao {
 	}
 
 	public static void main(String[] args) {
-		String rowkey = "xyz_abc";
+		String rowkey = "xyz_abc_kewang";
 		String mid = "_";
 		int rowkeyIndex = 3;
 
@@ -241,6 +256,26 @@ public abstract class AbstractDao {
 		public DomainField(String fieldName, String fieldValue) {
 			this.fieldName = fieldName;
 			this.fieldValue = fieldValue;
+		}
+	}
+
+	private class DomainComparator implements
+			Comparator<Class<? extends AbstractDomain>> {
+		public int compare(Class<? extends AbstractDomain> o1,
+				Class<? extends AbstractDomain> o2) {
+			Table table1 = o1.getAnnotation(Table.class);
+			Table table2 = o2.getAnnotation(Table.class);
+
+			int nameLength1 = table1.name().length();
+			int nameLength2 = table2.name().length();
+
+			if (nameLength1 > nameLength2) {
+				return 1;
+			} else if (nameLength1 == nameLength2) {
+				return 0;
+			} else {
+				return -1;
+			}
 		}
 	}
 }
