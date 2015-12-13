@@ -95,4 +95,8 @@ public abstract class AbstractDomain {
 	public void setQualifier(ColumnQualifier qualifier) {
 		this.qualifier = qualifier;
 	}
+
+	public Object getRawValues() {
+		return null;
+	}
 }

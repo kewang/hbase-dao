@@ -37,4 +37,14 @@ public class DaoTest extends TestCase {
 		assertNotNull(u2);
 		assertEquals("kewang", u2.getId());
 	}
+
+	public void testUser1GetRawValues() {
+		HBaseSettings.setZooKeeperQuorum("localhost");
+
+		UserDao uDao = new UserDao();
+
+		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");
+
+		assertNotNull(u1.getRawValues());
+	}
 }
