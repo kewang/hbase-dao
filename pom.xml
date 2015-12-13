@@ -162,21 +162,5 @@
 			<id>cloudera</id>
 			<url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
 		</repository>
-
-		<repository>
-			<id>mitake.internal.snapshot</id>
-			<url>http://10.1.17.241:8081/nexus/content/repositories/mitake_dev_snapshot</url>
-			<name>Mitake Internal Snapshots Repository</name>
-			<releases>
-				<enabled>false</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-		</repository>
 	</repositories>
 </project>
