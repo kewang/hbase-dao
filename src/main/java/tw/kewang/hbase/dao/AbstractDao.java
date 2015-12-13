@@ -26,7 +26,8 @@ public abstract class AbstractDao {
 			.getInstance().getHConnection();
 
 	private final Table table = getTableAnnotation();
-	private final Class<? extends AbstractDomain>[] domains = (table.domains());
+	private final Class<? extends AbstractDomain>[] domains = sortDomains(table
+			.domains());
 
 	public AbstractDomain getByRowkey(String rowkey) {
 		HTableInterface hTableInterface = null;
@@ -58,7 +59,9 @@ public abstract class AbstractDao {
 
 		Collections.sort(destDomains, new DomainComparator());
 
-		return (Class<? extends AbstractDomain>[]) destDomains.toArray();
+		// XXX: http://stackoverflow.com/a/9293523/939212
+		return (Class<? extends AbstractDomain>[]) destDomains
+				.toArray(new Class[0]);
 	}
 
 	private AbstractDomain findDomain(String rowkey) throws Exception {
