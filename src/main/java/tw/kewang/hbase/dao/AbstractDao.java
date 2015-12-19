@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -38,7 +39,11 @@ public abstract class AbstractDao {
 			Result result = hTableInterface.get(buildGet(rowkey));
 
 			if (!result.isEmpty()) {
-				return findDomain(rowkey);
+				AbstractDomain domain = buildDomainWithRowkey(rowkey);
+
+				domain.setRawValues(result.rawCells());
+
+				return domain;
 			}
 		} catch (Exception e) {
 			LOG.error(Constants.EXCEPTION_PREFIX, e);
@@ -64,7 +69,8 @@ public abstract class AbstractDao {
 				.toArray(new Class[0]);
 	}
 
-	private AbstractDomain findDomain(String rowkey) throws Exception {
+	private AbstractDomain buildDomainWithRowkey(String rowkey)
+			throws Exception {
 		for (Class<? extends AbstractDomain> domainClass : domains) {
 			Domain domainAnnotation = domainClass.getAnnotation(Domain.class);
 			ArrayList<DomainField> domainFields = buildDomain(domainClass,
