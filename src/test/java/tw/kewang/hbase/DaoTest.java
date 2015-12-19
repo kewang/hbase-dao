@@ -46,5 +46,6 @@ public class DaoTest extends TestCase {
 		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");
 
 		assertNotNull(u1.getRawValues());
+		assertEquals("kewang", u1.getNickname().getValue());
 	}
 }
