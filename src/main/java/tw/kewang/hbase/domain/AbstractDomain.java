@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,18 +93,18 @@ public abstract class AbstractDomain {
 		for (Cell cell : cells) {
 			HashMap<String, HashMap<Long, byte[]>> qualifierMaps = buildQualifierMaps(cell);
 
-			byte[] qualifierArray = cell.getQualifierArray();
+			byte[] qualifierArray = CellUtil.cloneQualifier(cell);
 			String qualifier = Bytes.toString(qualifierArray);
 
 			HashMap<Long, byte[]> timestampMaps = buildTimestampMaps(cell,
 					qualifierMaps, qualifier);
 
-			timestampMaps.put(cell.getTimestamp(), qualifierArray);
+			timestampMaps.put(cell.getTimestamp(), CellUtil.cloneValue(cell));
 		}
 	}
 
 	private HashMap<String, HashMap<Long, byte[]>> buildQualifierMaps(Cell cell) {
-		String family = Bytes.toString(cell.getFamilyArray());
+		String family = Bytes.toString(CellUtil.cloneFamily(cell));
 
 		HashMap<String, HashMap<Long, byte[]>> qualifierMaps = rawMaps
 				.get(family);
