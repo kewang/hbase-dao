@@ -93,11 +93,8 @@ public abstract class AbstractDomain {
 		for (Cell cell : cells) {
 			HashMap<String, HashMap<Long, byte[]>> qualifierMaps = buildQualifierMaps(cell);
 
-			byte[] qualifierArray = CellUtil.cloneQualifier(cell);
-			String qualifier = Bytes.toString(qualifierArray);
-
 			HashMap<Long, byte[]> timestampMaps = buildTimestampMaps(cell,
-					qualifierMaps, qualifier);
+					qualifierMaps);
 
 			timestampMaps.put(cell.getTimestamp(), CellUtil.cloneValue(cell));
 		}
@@ -119,8 +116,9 @@ public abstract class AbstractDomain {
 	}
 
 	private HashMap<Long, byte[]> buildTimestampMaps(Cell cell,
-			HashMap<String, HashMap<Long, byte[]>> qualifierMaps,
-			String qualifier) {
+			HashMap<String, HashMap<Long, byte[]>> qualifierMaps) {
+		String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
+
 		HashMap<Long, byte[]> timestampMaps = qualifierMaps.get(qualifier);
 
 		if (timestampMaps == null) {
