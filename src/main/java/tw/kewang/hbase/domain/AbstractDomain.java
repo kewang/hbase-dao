@@ -177,6 +177,16 @@ public abstract class AbstractDomain {
 			rawValues.put(qualifier, v);
 
 			field.set(this, v);
+		} else if (type == byte[].class) {
+			Value<byte[]> v = new Value<byte[]>();
+
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.qualifier = qualifier;
+			v.value = CellUtil.cloneValue(cell);
+
+			rawValues.put(qualifier, v);
+
+			field.set(this, v);
 		}
 	}
 
