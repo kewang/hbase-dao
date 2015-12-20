@@ -1,6 +1,8 @@
 package tw.kewang.hbase.domain;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +13,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.kewang.hbase.annotations.Column;
 import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Domain;
 import tw.kewang.hbase.dao.Constants;
@@ -20,11 +23,12 @@ public abstract class AbstractDomain {
 			.getLogger(AbstractDomain.class);
 	private static final Pattern PATTERN = Pattern.compile("\\{([\\d\\w]+)\\}");
 
-	private HashMap<String, HashMap<String, HashMap<Long, byte[]>>> rawMaps;
+	private Class<?> clazz = getClass();
+
+	@SuppressWarnings("rawtypes")
+	private HashMap<String, Value> rawValues;
 
 	public String getRowkey() {
-		Class<?> clazz = getClass();
-
 		Domain domain = clazz.getAnnotation(Domain.class);
 
 		if (domain != null) {
@@ -83,50 +87,121 @@ public abstract class AbstractDomain {
 		return null;
 	}
 
-	public HashMap<String, HashMap<String, HashMap<Long, byte[]>>> getRawValues() {
-		return rawMaps;
+	@SuppressWarnings("rawtypes")
+	public HashMap<String, Value> getRawValues() {
+		return rawValues;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setRawValues(Cell[] cells) {
-		rawMaps = new HashMap<String, HashMap<String, HashMap<Long, byte[]>>>();
+		rawValues = new HashMap<String, Value>();
 
-		for (Cell cell : cells) {
-			HashMap<String, HashMap<Long, byte[]>> qualifierMaps = buildQualifierMaps(cell);
+		try {
+			for (Cell cell : cells) {
+				String qualifier = Bytes
+						.toString(CellUtil.cloneQualifier(cell));
 
-			HashMap<Long, byte[]> timestampMaps = buildTimestampMaps(cell,
-					qualifierMaps);
+				boolean buildSuccess = buildRawValue(cell, qualifier);
 
-			timestampMaps.put(cell.getTimestamp(), CellUtil.cloneValue(cell));
+				if (!buildSuccess) {
+					Value<byte[]> v = new Value<byte[]>();
+
+					v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+					v.qualifier = qualifier;
+					v.value = CellUtil.cloneValue(cell);
+
+					rawValues.put(qualifier, v);
+				}
+			}
+		} catch (Exception e) {
+			LOG.error(Constants.EXCEPTION_PREFIX, e);
 		}
 	}
 
-	private HashMap<String, HashMap<Long, byte[]>> buildQualifierMaps(Cell cell) {
-		String family = Bytes.toString(CellUtil.cloneFamily(cell));
+	private boolean buildRawValue(Cell cell, String qualifier) {
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				field.setAccessible(true);
 
-		HashMap<String, HashMap<Long, byte[]>> qualifierMaps = rawMaps
-				.get(family);
+				if (field.getType() == Value.class) {
+					Column column = field.getAnnotation(Column.class);
 
-		if (qualifierMaps == null) {
-			qualifierMaps = new HashMap<String, HashMap<Long, byte[]>>();
+					if (column == null || !qualifier.equals(column.name())) {
+						continue;
+					}
 
-			rawMaps.put(family, qualifierMaps);
+					setCell(field, cell, qualifier);
+
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			LOG.error(Constants.EXCEPTION_PREFIX, e);
 		}
 
-		return qualifierMaps;
+		return false;
 	}
 
-	private HashMap<Long, byte[]> buildTimestampMaps(Cell cell,
-			HashMap<String, HashMap<Long, byte[]>> qualifierMaps) {
-		String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
+	private void setCell(Field field, Cell cell, String qualifier)
+			throws Exception {
+		ParameterizedType pType = (ParameterizedType) field.getGenericType();
+		Type type = pType.getActualTypeArguments()[0];
 
-		HashMap<Long, byte[]> timestampMaps = qualifierMaps.get(qualifier);
+		if (type == String.class) {
+			Value<String> v = new Value<String>();
 
-		if (timestampMaps == null) {
-			timestampMaps = new HashMap<Long, byte[]>();
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.qualifier = qualifier;
+			v.value = Bytes.toString(CellUtil.cloneValue(cell));
 
-			qualifierMaps.put(qualifier, timestampMaps);
+			rawValues.put(qualifier, v);
+
+			field.set(this, v);
+		} else if (type == Integer.class) {
+			Value<Integer> v = new Value<Integer>();
+
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.qualifier = qualifier;
+			v.value = Bytes.toInt(CellUtil.cloneValue(cell));
+
+			rawValues.put(qualifier, v);
+
+			field.set(this, v);
+		} else if (type == Long.class) {
+			Value<Long> v = new Value<Long>();
+
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.qualifier = qualifier;
+			v.value = Bytes.toLong(CellUtil.cloneValue(cell));
+
+			rawValues.put(qualifier, v);
+
+			field.set(this, v);
+		}
+	}
+
+	public class Value<T> {
+		private String family;
+		private String qualifier;
+		private T value;
+
+		public String getFamily() {
+			return family;
 		}
 
-		return timestampMaps;
+		public String getQualifier() {
+			return qualifier;
+		}
+
+		@SuppressWarnings("unchecked")
+		public T getValue() {
+			return (T) rawValues.get(qualifier).value;
+		}
+
+		@Override
+		public String toString() {
+			return "Value [family=" + family + ", qualifier=" + qualifier
+					+ ", value=" + value + "]";
+		}
 	}
 }

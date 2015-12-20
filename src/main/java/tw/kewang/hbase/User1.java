@@ -1,5 +1,6 @@
 package tw.kewang.hbase;
 
+import tw.kewang.hbase.annotations.Column;
 import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Domain;
 import tw.kewang.hbase.domain.AbstractDomain;
@@ -11,6 +12,12 @@ public class User1 extends AbstractDomain {
 
 	@Component(name = "at")
 	private String accessToken;
+
+	@Column(name = "nk")
+	private Value<String> nickname;
+
+	@Column(name = "day")
+	private Value<Integer> day;
 
 	private long createdTime;
 
@@ -30,6 +37,26 @@ public class User1 extends AbstractDomain {
 
 	public User1 setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
+
+		return this;
+	}
+
+	public Value<String> getNickname() {
+		return nickname;
+	}
+
+	public User1 setNickname(Value<String> nickname) {
+		this.nickname = nickname;
+
+		return this;
+	}
+
+	public Value<Integer> getDay() {
+		return day;
+	}
+
+	public User1 setDay(Value<Integer> day) {
+		this.day = day;
 
 		return this;
 	}
