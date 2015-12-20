@@ -16,6 +16,9 @@ public class User1 extends AbstractDomain {
 	@Column(name = "nk")
 	private Value<String> nickname;
 
+	@Column(name = "day")
+	private Value<Integer> day;
+
 	private long createdTime;
 
 	public String getUserId() {
@@ -44,6 +47,16 @@ public class User1 extends AbstractDomain {
 
 	public User1 setNickname(Value<String> nickname) {
 		this.nickname = nickname;
+
+		return this;
+	}
+
+	public Value<Integer> getDay() {
+		return day;
+	}
+
+	public User1 setDay(Value<Integer> day) {
+		this.day = day;
 
 		return this;
 	}
