@@ -109,28 +109,36 @@ public abstract class AbstractDomain {
 	}
 
 	private void buildRawValue(Cell cell, String qualifier) {
-		for (Field field : clazz.getDeclaredFields()) {
-			field.setAccessible(true);
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				field.setAccessible(true);
 
-			if (field.getType() == Value.class) {
-				Column column = field.getAnnotation(Column.class);
+				if (field.getType() == Value.class) {
+					Column column = field.getAnnotation(Column.class);
 
-				if (column == null || !qualifier.equals(column.name())) {
-					continue;
-				}
+					if (column == null || !qualifier.equals(column.name())) {
+						continue;
+					}
 
-				ParameterizedType pType = (ParameterizedType) field
-						.getGenericType();
-				Type type = pType.getActualTypeArguments()[0];
+					ParameterizedType pType = (ParameterizedType) field
+							.getGenericType();
+					Type type = pType.getActualTypeArguments()[0];
 
-				if (type == String.class) {
-					Value<String> v = new Value<String>();
+					if (type == String.class) {
+						Value<String> v = new Value<String>();
 
-					v.value = Bytes.toString(CellUtil.cloneValue(cell));
+						v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+						v.value = Bytes.toString(CellUtil.cloneValue(cell));
+						v.qualifier = qualifier;
 
-					rawValues.put(qualifier, v);
+						field.set(this, v);
+
+						rawValues.put(qualifier, v);
+					}
 				}
 			}
+		} catch (Exception e) {
+			LOG.error(Constants.EXCEPTION_PREFIX, e);
 		}
 	}
 
@@ -150,6 +158,12 @@ public abstract class AbstractDomain {
 		@SuppressWarnings("unchecked")
 		public T getValue() {
 			return (T) rawValues.get(qualifier).value;
+		}
+
+		@Override
+		public String toString() {
+			return "Value [family=" + family + ", qualifier=" + qualifier
+					+ ", value=" + value + "]";
 		}
 	}
 }

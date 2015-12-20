@@ -1,7 +1,10 @@
 package tw.kewang.hbase;
 
+import java.util.Map.Entry;
+
 import junit.framework.TestCase;
 import tw.kewang.hbase.dao.HBaseSettings;
+import tw.kewang.hbase.domain.AbstractDomain.Value;
 
 public class DaoTest extends TestCase {
 	public void testUser1GetByRowkey() {
@@ -46,6 +49,11 @@ public class DaoTest extends TestCase {
 		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");
 
 		assertNotNull(u1.getRawValues());
+
+		for (Entry<String, Value> entry : u1.getRawValues().entrySet()) {
+			System.out.println(entry.getValue());
+		}
+
 		assertEquals("kewang", u1.getNickname().getValue());
 	}
 }
