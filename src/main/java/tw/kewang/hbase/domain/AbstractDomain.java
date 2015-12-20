@@ -157,6 +157,26 @@ public abstract class AbstractDomain {
 			rawValues.put(qualifier, v);
 
 			field.set(this, v);
+		} else if (type == Integer.class) {
+			Value<Integer> v = new Value<Integer>();
+
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.qualifier = qualifier;
+			v.value = Bytes.toInt(CellUtil.cloneValue(cell));
+
+			rawValues.put(qualifier, v);
+
+			field.set(this, v);
+		} else if (type == Long.class) {
+			Value<Long> v = new Value<Long>();
+
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.qualifier = qualifier;
+			v.value = Bytes.toLong(CellUtil.cloneValue(cell));
+
+			rawValues.put(qualifier, v);
+
+			field.set(this, v);
 		}
 	}
 
