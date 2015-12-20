@@ -120,25 +120,29 @@ public abstract class AbstractDomain {
 						continue;
 					}
 
-					ParameterizedType pType = (ParameterizedType) field
-							.getGenericType();
-					Type type = pType.getActualTypeArguments()[0];
-
-					if (type == String.class) {
-						Value<String> v = new Value<String>();
-
-						v.family = Bytes.toString(CellUtil.cloneFamily(cell));
-						v.value = Bytes.toString(CellUtil.cloneValue(cell));
-						v.qualifier = qualifier;
-
-						field.set(this, v);
-
-						rawValues.put(qualifier, v);
-					}
+					setCell(field, cell, qualifier);
 				}
 			}
 		} catch (Exception e) {
 			LOG.error(Constants.EXCEPTION_PREFIX, e);
+		}
+	}
+
+	private void setCell(Field field, Cell cell, String qualifier)
+			throws Exception {
+		ParameterizedType pType = (ParameterizedType) field.getGenericType();
+		Type type = pType.getActualTypeArguments()[0];
+
+		if (type == String.class) {
+			Value<String> v = new Value<String>();
+
+			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+			v.value = Bytes.toString(CellUtil.cloneValue(cell));
+			v.qualifier = qualifier;
+
+			field.set(this, v);
+
+			rawValues.put(qualifier, v);
 		}
 	}
 
