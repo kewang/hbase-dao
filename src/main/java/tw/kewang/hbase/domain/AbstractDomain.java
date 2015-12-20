@@ -101,14 +101,24 @@ public abstract class AbstractDomain {
 				String qualifier = Bytes
 						.toString(CellUtil.cloneQualifier(cell));
 
-				buildRawValue(cell, qualifier);
+				boolean buildSuccess = buildRawValue(cell, qualifier);
+
+				if (!buildSuccess) {
+					Value<byte[]> v = new Value<byte[]>();
+
+					v.family = Bytes.toString(CellUtil.cloneFamily(cell));
+					v.qualifier = qualifier;
+					v.value = CellUtil.cloneValue(cell);
+
+					rawValues.put(qualifier, v);
+				}
 			}
 		} catch (Exception e) {
 			LOG.error(Constants.EXCEPTION_PREFIX, e);
 		}
 	}
 
-	private void buildRawValue(Cell cell, String qualifier) {
+	private boolean buildRawValue(Cell cell, String qualifier) {
 		try {
 			for (Field field : clazz.getDeclaredFields()) {
 				field.setAccessible(true);
@@ -121,11 +131,15 @@ public abstract class AbstractDomain {
 					}
 
 					setCell(field, cell, qualifier);
+
+					return true;
 				}
 			}
 		} catch (Exception e) {
 			LOG.error(Constants.EXCEPTION_PREFIX, e);
 		}
+
+		return false;
 	}
 
 	private void setCell(Field field, Cell cell, String qualifier)
@@ -137,12 +151,12 @@ public abstract class AbstractDomain {
 			Value<String> v = new Value<String>();
 
 			v.family = Bytes.toString(CellUtil.cloneFamily(cell));
-			v.value = Bytes.toString(CellUtil.cloneValue(cell));
 			v.qualifier = qualifier;
-
-			field.set(this, v);
+			v.value = Bytes.toString(CellUtil.cloneValue(cell));
 
 			rawValues.put(qualifier, v);
+
+			field.set(this, v);
 		}
 	}
 
