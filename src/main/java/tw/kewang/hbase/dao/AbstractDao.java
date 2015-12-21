@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public abstract class AbstractDao {
 		return null;
 	}
 
-	public ArrayList<? extends AbstractDomain> scan() {
+	public ArrayList<? extends AbstractDomain> scan(Scan scan) {
 		ArrayList<? extends AbstractDomain> domains = new ArrayList<AbstractDomain>();
 
 		return domains;
