@@ -55,6 +55,12 @@ public abstract class AbstractDao {
 		return null;
 	}
 
+	public ArrayList<? extends AbstractDomain> scan() {
+		ArrayList<? extends AbstractDomain> domains = new ArrayList<AbstractDomain>();
+
+		return domains;
+	}
+
 	@SuppressWarnings("unchecked")
 	private Class<? extends AbstractDomain>[] sortDomains(
 			Class<? extends AbstractDomain>[] srcDomains) {
