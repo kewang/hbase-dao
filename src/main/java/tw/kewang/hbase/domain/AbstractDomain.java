@@ -48,6 +48,10 @@ public abstract class AbstractDomain {
 
 				Component component = field.getAnnotation(Component.class);
 
+				if (component == null) {
+					continue;
+				}
+
 				if (component.name().equals(matcher.group(1))) {
 					try {
 						String value = castValue(field);

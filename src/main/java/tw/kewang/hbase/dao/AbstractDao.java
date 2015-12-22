@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +41,7 @@ public abstract class AbstractDao {
 			Result result = hTableInterface.get(buildGet(rowkey));
 
 			if (!result.isEmpty()) {
-				AbstractDomain domain = buildDomainWithRowkey(rowkey);
-
-				domain.setRawValues(result.rawCells());
+				AbstractDomain domain = build(result, rowkey);
 
 				return domain;
 			}
@@ -53,6 +54,54 @@ public abstract class AbstractDao {
 		}
 
 		return null;
+	}
+
+	public ArrayList<AbstractDomain> scan(Scan scan) {
+		HTableInterface hTableInterface = null;
+
+		ArrayList<AbstractDomain> domains = new ArrayList<AbstractDomain>();
+
+		try {
+			hTableInterface = CONNECTION.getTable(table.name());
+
+			ResultScanner scanner = hTableInterface.getScanner(scan);
+
+			Iterator<Result> iter = scanner.iterator();
+
+			while (iter.hasNext()) {
+				Result result = iter.next();
+
+				if (!result.isEmpty()) {
+					String rowkey = Bytes.toString(result.getRow());
+
+					AbstractDomain domain = build(result, rowkey);
+
+					if (domain != null) {
+						domains.add(domain);
+					}
+				}
+			}
+
+			return domains;
+		} catch (Exception e) {
+			LOG.error(Constants.EXCEPTION_PREFIX, e);
+		} catch (Error e) {
+			LOG.error(Constants.EXCEPTION_PREFIX, e);
+		} finally {
+			closeHTable(hTableInterface);
+		}
+
+		return domains;
+	}
+
+	private AbstractDomain build(Result result, String rowkey) throws Exception {
+		AbstractDomain domain = buildDomainWithRowkey(rowkey);
+
+		if (domain != null) {
+			domain.setRawValues(result.rawCells());
+		}
+
+		return domain;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -72,8 +121,8 @@ public abstract class AbstractDao {
 			throws Exception {
 		for (Class<? extends AbstractDomain> domainClass : domains) {
 			Domain domainAnnotation = domainClass.getAnnotation(Domain.class);
-			ArrayList<DomainField> domainFields = buildDomain(domainClass,
-					domainAnnotation.rowkey(), rowkey);
+			ArrayList<DomainField> domainFields = buildDomainWithField(
+					domainClass, domainAnnotation.rowkey(), rowkey);
 
 			if (domainFields == null) {
 				continue;
@@ -146,8 +195,8 @@ public abstract class AbstractDao {
 		return get;
 	}
 
-	private ArrayList<DomainField> buildDomain(Class<?> clazz, String pattern,
-			String rowkey) {
+	private ArrayList<DomainField> buildDomainWithField(Class<?> clazz,
+			String pattern, String rowkey) {
 		char[] patternChars = pattern.toCharArray();
 		char[] rowkeyChars = rowkey.toCharArray();
 		boolean foundField = false;
@@ -179,8 +228,6 @@ public abstract class AbstractDao {
 
 				break;
 			case '}':
-				LOG.debug(fieldName.toString());
-
 				char separator;
 
 				if (patternIndex == patternChars.length - 1) {
