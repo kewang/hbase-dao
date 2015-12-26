@@ -21,11 +21,41 @@ public class ScanTest extends TestCase {
 		HBaseSettings.setZooKeeperQuorum("localhost");
 	}
 
-	public void testUser1Scan() {
+	public void testUser1FullScan() {
 		UserDao uDao = new UserDao();
 
 		ArrayList<AbstractDomain> domains = uDao.scan(new ScanBuilder()
 				.create());
+
+		for (AbstractDomain domain : domains) {
+			LOG.debug("{}: {}", domain.getClass().getName(), domain.getRowkey());
+
+			for (Entry<String, Value> entry : domain.getRawValues().entrySet()) {
+				LOG.debug("{}: {}", entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	public void testUser1StartRowScan() {
+		UserDao uDao = new UserDao();
+
+		ArrayList<AbstractDomain> domains = uDao.scan(new ScanBuilder()
+				.setStartRow("xyz_abc").create());
+
+		for (AbstractDomain domain : domains) {
+			LOG.debug("{}: {}", domain.getClass().getName(), domain.getRowkey());
+
+			for (Entry<String, Value> entry : domain.getRawValues().entrySet()) {
+				LOG.debug("{}: {}", entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	public void testUser1StartRowEndScan() {
+		UserDao uDao = new UserDao();
+
+		ArrayList<AbstractDomain> domains = uDao.scan(new ScanBuilder()
+				.setStartRow("xyz_abc", true).create());
 
 		for (AbstractDomain domain : domains) {
 			LOG.debug("{}: {}", domain.getClass().getName(), domain.getRowkey());
