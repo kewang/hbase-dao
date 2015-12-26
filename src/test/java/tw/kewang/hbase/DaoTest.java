@@ -7,9 +7,12 @@ import tw.kewang.hbase.dao.HBaseSettings;
 import tw.kewang.hbase.domain.AbstractDomain.Value;
 
 public class DaoTest extends TestCase {
-	public void testUser1GetByRowkey() {
+	@Override
+	protected void setUp() throws Exception {
 		HBaseSettings.setZooKeeperQuorum("localhost");
+	}
 
+	public void testUser1GetByRowkey() {
 		UserDao uDao = new UserDao();
 
 		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");
@@ -19,8 +22,6 @@ public class DaoTest extends TestCase {
 	}
 
 	public void testUser1GetByRowkeyNotFound() {
-		HBaseSettings.setZooKeeperQuorum("localhost");
-
 		UserDao uDao = new UserDao();
 
 		User1 u1 = (User1) uDao.getByRowkey("xyz_a");
@@ -29,8 +30,6 @@ public class DaoTest extends TestCase {
 	}
 
 	public void testUser1AndUser2GetByRowkey() {
-		HBaseSettings.setZooKeeperQuorum("localhost");
-
 		UserDao uDao = new UserDao();
 
 		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");
@@ -42,8 +41,6 @@ public class DaoTest extends TestCase {
 	}
 
 	public void testUser1GetRawValues() {
-		HBaseSettings.setZooKeeperQuorum("localhost");
-
 		UserDao uDao = new UserDao();
 
 		User1 u1 = (User1) uDao.getByRowkey("xyz_abc");

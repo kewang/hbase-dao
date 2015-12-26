@@ -8,9 +8,12 @@ import tw.kewang.hbase.dao.scan.ScanBuilder;
 import tw.kewang.hbase.domain.AbstractDomain;
 
 public class ScanTest extends TestCase {
-	public void testUser1Scan() {
+	@Override
+	protected void setUp() throws Exception {
 		HBaseSettings.setZooKeeperQuorum("localhost");
+	}
 
+	public void testUser1Scan() {
 		UserDao uDao = new UserDao();
 
 		ArrayList<AbstractDomain> domains = uDao.scan(new ScanBuilder()

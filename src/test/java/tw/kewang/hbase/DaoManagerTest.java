@@ -5,9 +5,12 @@ import tw.kewang.hbase.dao.DaoManager;
 import tw.kewang.hbase.dao.HBaseSettings;
 
 public class DaoManagerTest extends TestCase {
-	public void testUser1GetByRowkey() {
+	@Override
+	protected void setUp() throws Exception {
 		HBaseSettings.setZooKeeperQuorum("localhost");
+	}
 
+	public void testUser1GetByRowkey() {
 		User1 u1 = (User1) DaoManager.getInstance(UserDao.class).getByRowkey(
 				"xyz_abc");
 
@@ -16,8 +19,6 @@ public class DaoManagerTest extends TestCase {
 	}
 
 	public void testUser1GetByRowkeyNotFound() {
-		HBaseSettings.setZooKeeperQuorum("localhost");
-
 		User1 u1 = (User1) DaoManager.getInstance(UserDao.class).getByRowkey(
 				"xyz_a");
 
