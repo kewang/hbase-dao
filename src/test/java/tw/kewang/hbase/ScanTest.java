@@ -3,11 +3,17 @@ package tw.kewang.hbase;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tw.kewang.hbase.dao.HBaseSettings;
 import tw.kewang.hbase.dao.scan.ScanBuilder;
 import tw.kewang.hbase.domain.AbstractDomain;
 
 public class ScanTest extends TestCase {
+	private static final Logger LOG = LoggerFactory.getLogger(ScanTest.class);
+
 	@Override
 	protected void setUp() throws Exception {
 		HBaseSettings.setZooKeeperQuorum("localhost");
@@ -20,7 +26,7 @@ public class ScanTest extends TestCase {
 				.create());
 
 		for (AbstractDomain domain : domains) {
-			System.out.println("domain: " + domain.getRowkey());
+			LOG.debug("{}: {}", domain.getClass().getName(), domain.getRowkey());
 		}
 	}
 }
