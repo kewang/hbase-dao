@@ -18,7 +18,7 @@ import tw.kewang.hbase.annotations.Component;
 import tw.kewang.hbase.annotations.Domain;
 import tw.kewang.hbase.dao.Constants;
 
-public abstract class AbstractDomain {
+public class AbstractDomain {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AbstractDomain.class);
 	private static final Pattern PATTERN = Pattern.compile("\\{([\\d\\w]+)\\}");
@@ -28,14 +28,23 @@ public abstract class AbstractDomain {
 	@SuppressWarnings("rawtypes")
 	private HashMap<String, Value> rawValues;
 
+	private String rowkey;
+
+	public AbstractDomain() {
+	}
+
+	public AbstractDomain(String rowkey) {
+		this.rowkey = rowkey;
+	}
+
 	public String getRowkey() {
 		Domain domain = clazz.getAnnotation(Domain.class);
 
 		if (domain != null) {
-			return buildRowkey(clazz, domain.rowkey());
+			rowkey = buildRowkey(clazz, domain.rowkey());
 		}
 
-		return null;
+		return rowkey;
 	}
 
 	private String buildRowkey(Class<?> clazz, String rowkeyPattern) {

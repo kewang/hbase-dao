@@ -97,9 +97,7 @@ public abstract class AbstractDao {
 	private AbstractDomain build(Result result, String rowkey) throws Exception {
 		AbstractDomain domain = buildDomainWithRowkey(rowkey);
 
-		if (domain != null) {
-			domain.setRawValues(result.rawCells());
-		}
+		domain.setRawValues(result.rawCells());
 
 		return domain;
 	}
@@ -155,7 +153,7 @@ public abstract class AbstractDao {
 			return domain;
 		}
 
-		return null;
+		return new AbstractDomain(rowkey);
 	}
 
 	private boolean findField(Class<? extends AbstractDomain> domainClass,
