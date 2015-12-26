@@ -2,11 +2,16 @@ package tw.kewang.hbase;
 
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import junit.framework.TestCase;
 import tw.kewang.hbase.dao.HBaseSettings;
 import tw.kewang.hbase.domain.AbstractDomain.Value;
 
 public class DaoTest extends TestCase {
+	private static final Logger LOG = LoggerFactory.getLogger(DaoTest.class);
+
 	@Override
 	protected void setUp() throws Exception {
 		HBaseSettings.setZooKeeperQuorum("localhost");
@@ -48,7 +53,7 @@ public class DaoTest extends TestCase {
 		assertNotNull(u1.getRawValues());
 
 		for (Entry<String, Value> entry : u1.getRawValues().entrySet()) {
-			System.out.println(entry.getValue());
+			LOG.debug(entry.getValue().toString());
 		}
 
 		assertEquals("kewang", u1.getNickname().getValue());
